@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- ============================================================
+     EDIT ME — the four things to change before you deploy.
+     1. Your name (search for  Your Name  below, 3 places)
+     2. Your GitHub username (search for  YOUR-USERNAME )
+     3. Your LinkedIn URL (search for  YOUR-LINKEDIN )
+     4. The <title> and <meta name="description"> right below
+     Everything else can stay until you have a project to add.
+     ============================================================ -->
+
+<title>Aditya Kannan — AI Engineer</title>
+<meta name="description" content="AI engineer. Retrieval, agents, and the unit economics of running them in production.">
+
+<style>
+  :root {
+    --bg:        #0c0e10;
+    --bg-raised: #14171a;
+    --line:      #23272c;
+    --line-soft: #1a1e21;
+    --text:      #e9e7e4;
+    --text-mid:  #a8aeb5;
+    --text-dim:  #6d757d;
+    --accent:    #e0a458;
+    --accent-dim:#8a6633;
+    --live:      #6fcf97;
+    --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg:        #fbfaf8;
+      --bg-raised: #ffffff;
+      --line:      #e2ded7;
+      --line-soft: #ece8e2;
+      --text:      #16191c;
+      --text-mid:  #4e555c;
+      --text-dim:  #858c93;
+      --accent:    #9a5f11;
+      --accent-dim:#c9a878;
+      --live:      #1d7a4c;
+      color-scheme: light;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+  }
+
+  a { color: var(--text); text-decoration: none; }
+
+  /* ---------- header ---------- */
+
+  header { padding: 88px 0 56px; }
+
+  h1 {
+    font-size: clamp(2rem, 6vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+
+  .tagline {
+    font-size: 1.075rem;
+    color: var(--text-mid);
+    margin: 0 0 28px;
+    max-width: 52ch;
+  }
+
+  .tagline strong { color: var(--text); font-weight: 600; }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+  }
+
+  .links a {
+    color: var(--text-mid);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 13px;
+    transition: color .15s, border-color .15s;
+  }
+
+  .links a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 40px 0; border-top: 1px solid var(--line-soft); }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 22px;
+  }
+
+  p { margin: 0 0 16px; color: var(--text-mid); }
+  p:last-child { margin-bottom: 0; }
+  p strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- projects ---------- */
+
+  .projects { display: flex; flex-direction: column; gap: 2px; }
+
+  .project {
+    display: block;
+    background: var(--bg-raised);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 20px 22px;
+    transition: border-color .15s, transform .15s;
+  }
+
+  a.project:hover { border-color: var(--accent-dim); transform: translateY(-1px); }
+
+  .project-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 7px;
+  }
+
+  .project h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .badge {
+    flex: none;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 2px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+  }
+
+  .badge.live     { color: var(--live);   border-color: var(--live); }
+  .badge.building { color: var(--accent); border-color: var(--accent-dim); }
+
+  .project p { font-size: 0.9375rem; margin: 0 0 12px; }
+
+  .stack {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* the numbers line — the thing that separates you from
+     "I built a chatbot". Fill it in the moment you have real ones. */
+  .metrics {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin: 0 0 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  /* ---------- build log ---------- */
+
+  .log { list-style: none; margin: 0; padding: 0; }
+
+  .log li {
+    display: flex;
+    gap: 18px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 0.9375rem;
+  }
+
+  .log li:last-child { border-bottom: 0; }
+
+  .log time {
+    flex: none;
+    width: 5.5em;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    padding-top: 3px;
+  }
+
+  .log a { color: var(--text-mid); border-bottom: 1px solid var(--line); }
+  .log a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+  .empty {
+    font-size: 0.9375rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    padding-top: 40px;
+    border-top: 1px solid var(--line-soft);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 560px) {
+    header { padding: 56px 0 40px; }
+    .project-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .log li { flex-direction: column; gap: 3px; }
+    .log time { width: auto; padding-top: 0; }
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Aditya Kannan</h1>
+    <p class="tagline">
+      AI engineer. I build <strong>retrieval and agent systems</strong> — and
+      I can tell you what each one costs per query.
+    </p>
+    <nav class="links">
+      <a href="https://github.com/adityakannan-2003">GitHub</a>
+      <a href="https://www.linkedin.com/in/adityakannan020/">LinkedIn</a>
+      <a href="mailto:kannanpadmavathi45@gmail.com">Email</a>
+      <!-- Add when you have them:
+      <a href="/resume.pdf">Résumé</a>
+      <a href="https://huggingface.co/YOUR-USERNAME">Hugging Face</a>
+      -->
+    </nav>
+  </header>
+
+  <section>
+    <h2>Now</h2>
+    <p>
+      Working through a self-directed 24-week AI engineering program —
+      transformers from scratch, then production RAG, agents, fine-tuning,
+      and the MLOps around all of it. Everything ships to a public URL.
+      Nothing stays in a notebook.
+    </p>
+    <p>
+      Background is CS plus an MS in Management of Technology, which mostly
+      means I'm interested in the part most demos skip: whether the thing is
+      worth running.
+    </p>
+  </section>
+
+  <section>
+    <h2>Projects</h2>
+    <div class="projects">
+
+      <!-- ============================================================
+           TO ADD A PROJECT: copy one <a class="project"> block below,
+           change the href to the live URL, set the badge to
+           "badge live" / "badge building", and fill the metrics line.
+           Delete the placeholder blocks as real ones replace them.
+           ============================================================ -->
+
+      <div class="project">
+        <div class="project-head">
+          <h3>Production RAG application</h3>
+          <span class="badge">Nov 2026</span>
+        </div>
+        <p>
+          Retrieval over a real document corpus with streaming responses,
+          citations back to source chunks, and an eval harness with a
+          hand-built golden dataset.
+        </p>
+        <div class="stack">Python · pgvector · hybrid search · LangSmith</div>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <h3>Multi-step tool-using agent</h3>
+          <span class="badge">Dec 2026</span>
+        </div>
+        <p>
+          Calls real external APIs, handles its own failures with retries and
+          fallbacks, and can't loop forever burning tokens. Fully traced.
+        </p>
+        <div class="stack">LangGraph · tool schemas · observability</div>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <h3>Fine-tuned open model</h3>
+          <span class="badge">Dec 2026</span>
+        </div>
+        <p>
+          A small open model tuned on a narrow task, benchmarked head-to-head
+          against prompting and RAG on accuracy, latency, and cost.
+        </p>
+        <div class="stack">LoRA · PEFT · TRL · Hugging Face Hub</div>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <h3>Capstone</h3>
+          <span class="badge">Jan 2027</span>
+        </div>
+        <p>
+          One system combining retrieval, agentic tool use, and production
+          infrastructure — shipped with an ROI memo defending the unit
+          economics of running it.
+        </p>
+        <div class="stack">TBD</div>
+      </div>
+
+      <!-- EXAMPLE of a finished card — delete this comment block and
+           uncomment when your first project is actually live.
+
+      <a class="project" href="https://your-project.vercel.app">
+        <div class="project-head">
+          <h3>Project name</h3>
+          <span class="badge live">Live</span>
+        </div>
+        <div class="metrics">
+          <span>87% faithfulness</span>
+          <span>$0.003 / query</span>
+          <span>p95 1.2s</span>
+        </div>
+        <p>One sentence on what it does and who it's for.</p>
+        <div class="stack">Stack · goes · here</div>
+      </a>
+      -->
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Build log</h2>
+    <ul class="log">
+      <!-- One line per week. Link to the post, the repo, or the commit.
+           <li><time>2026-09-13</time><span>Built an autograd engine from scratch —
+           <a href="#">what backprop actually is</a></span></li> -->
+      <li class="empty">Starting 7 September 2026. One entry a week.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Aditya kannan · <a href="https://github.com/adityakannan-2003">github.com/adityakannan-2003</a>
+  </footer>
+
+</div>
+</body>
+</html>
