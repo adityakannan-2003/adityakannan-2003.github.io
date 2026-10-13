@@ -262,7 +262,7 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
     <div class="col prose">
       <p>Working through a self-directed 24-week AI engineering program — transformers from scratch, then production RAG, agents, fine-tuning, and the MLOps around all of it. Everything ships to a public URL. Nothing stays in a notebook.</p>
       <p>Background is CS plus an MS in Management of Technology, which mostly means I'm interested in the part most demos skip: whether the thing is worth running.</p>
-      <p>Next: a public version of the data analyst agent, then a test bench for prompt injection against tool-using agents, then a small open model fine-tuned and measured against a frontier model.</p>
+      <p>Next: a test bench for prompt injection against tool-using agents, then a small open model fine-tuned and measured against a frontier model.</p>
     </div>
   </section>
 
@@ -328,6 +328,7 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
         <div class="project-head">
           <h3>Data Analyst Agent</h3>
           <div class="project-links">
+            <a href="https://adityakannan-data-analyst.streamlit.app">Live demo ↗</a>
             <a href="https://github.com/adityakannan-2003/data-analyst-agent">Code ↗</a>
             <a href="https://github.com/adityakannan-2003/data-analyst-agent#evaluation">Evals ↗</a>
           </div>
@@ -352,7 +353,7 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
           <li>Runs code in a child process that keeps its variables between calls like notebook cells, restarts it after a 60-second hang, and trims tracebacks to the agent’s own lines so the model can see what to fix.</li>
           <li>Built two evals with 37 questions whose answer keys are computed from the data, and tested the grader on empty, off-topic and subtly wrong answers.</li>
           <li>Made Sonnet 5.5 the default after it matched Opus 5.5 on five held-out questions at about half the cost.</li>
-          <li>Built a version that runs the agent’s code in Anthropic’s sandbox, so it can be offered on a public page. It passed the same 37 questions on every run, at $0.025 to $0.039 per answer.</li>
+          <li>Put it <a href="https://adityakannan-data-analyst.streamlit.app">online</a> for anyone to try, with the agent’s code running in Anthropic’s sandbox instead of on the server. That version passed the same 37 questions on every run, at $0.025 to $0.039 per answer.</li>
           <li>Of the 4 failures I investigated, <strong>3 were bugs in my own answer key</strong>. Reading failures before trusting the score is what found them.</li>
         </ul>
         <p class="stack">Python · Claude API · pandas · matplotlib · Streamlit · pytest · GitHub Actions</p>
@@ -415,7 +416,7 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
     <h2 id="log-label" class="rail-label">Build log</h2>
     <div class="col">
       <ol class="buildlog">
-        <li><time datetime="2026-10-12">2026-10-12</time><span>Moved the data analyst agent’s code into Anthropic’s sandbox for a public page, and <a href="https://github.com/adityakannan-2003/data-analyst-agent#online-version">ran both evals again</a>: every question passed.</span></li>
+        <li><time datetime="2026-10-12">2026-10-12</time><span>Put the data analyst agent <a href="https://adityakannan-data-analyst.streamlit.app">online</a>, with its code running in Anthropic’s sandbox. <a href="https://github.com/adityakannan-2003/data-analyst-agent#online-version">Both evals passed again</a>.</span></li>
         <li><time datetime="2026-10-10">2026-10-10</time><span>Data analyst agent: <a href="https://github.com/adityakannan-2003/data-analyst-agent#real-data-eval">15 of 15 questions on 541,909 real transactions</a>, traps included.</span></li>
         <li><time datetime="2026-10-07">2026-10-07</time><span>Agent Rulebook: <a href="https://github.com/adityakannan-2003/agent-rulebook">36 lines of rules between an agent and its actions</a>, with a live demo.</span></li>
         <li><time datetime="2026-10-06">2026-10-06</time><span>edgar-intel: <a href="https://github.com/adityakannan-2003/edgar-intel/commit/c4a7424">fixed the citation bug</a> that made the agent escalate 48% of questions.</span></li>
