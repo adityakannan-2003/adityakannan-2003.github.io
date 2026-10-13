@@ -2,377 +2,453 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- ============================================================
-     EDIT ME — the four things to change before you deploy.
-     1. Your name (search for  Your Name  below, 3 places)
-     2. Your GitHub username (search for  YOUR-USERNAME )
-     3. Your LinkedIn URL (search for  YOUR-LINKEDIN )
-     4. The <title> and <meta name="description"> right below
-     Everything else can stay until you have a project to add.
-     ============================================================ -->
-
-<title>Aditya Kannan — AI Engineer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="AI engineer. Retrieval, agents, and the unit economics of running them in production.">
-
+<meta property="og:title" content="Aditya Kannan — AI Engineer">
+<meta property="og:description" content="AI engineer. Retrieval, agents, and the unit economics of running them in production.">
+<meta property="og:type" content="website">
+<title>Aditya Kannan — AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
 <style>
-  :root {
-    --bg:        #0c0e10;
-    --bg-raised: #14171a;
-    --line:      #23272c;
-    --line-soft: #1a1e21;
-    --text:      #e9e7e4;
-    --text-mid:  #a8aeb5;
-    --text-dim:  #6d757d;
-    --accent:    #e0a458;
-    --accent-dim:#8a6633;
-    --live:      #6fcf97;
-    --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
-    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+/* Layout: a résumé page. A narrow left rail carries section labels; one reading column (~68ch) carries the work. Stacks to one column on phones. */
+:root {
+  --bg: #fafbfc;
+  --surface: #f0f2f6;
+  --fg: #161a22;
+  --muted: #586071;
+  --line: #dde1e8;
+  --accent: #2140a8;
+  --bar: #b9c4e4;
+  --ok: #1c7a47;   --ok-bg: #e2f3e9;
+  --ask: #8a5700;  --ask-bg: #fbefd6;
+  --no: #ad2620;   --no-bg: #fbe4e2;
+
+  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --rail: 11rem;
+  --measure: 42rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1217; --surface: #181c24; --fg: #e8ebf1; --muted: #9aa3b5; --line: #2a303b;
+    --accent: #93acff; --bar: #3a4870;
+    --ok: #63d394; --ok-bg: #143323; --ask: #f0b54a; --ask-bg: #3a2c10; --no: #ff8a83; --no-bg: #3d1715;
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1217; --surface: #181c24; --fg: #e8ebf1; --muted: #9aa3b5; --line: #2a303b;
+  --accent: #93acff; --bar: #3a4870;
+  --ok: #63d394; --ok-bg: #143323; --ask: #f0b54a; --ask-bg: #3a2c10; --no: #ff8a83; --no-bg: #3d1715;
+  color-scheme: dark;
+}
 
-  @media (prefers-color-scheme: light) {
-    :root {
-      --bg:        #fbfaf8;
-      --bg-raised: #ffffff;
-      --line:      #e2ded7;
-      --line-soft: #ece8e2;
-      --text:      #16191c;
-      --text-mid:  #4e555c;
-      --text-dim:  #858c93;
-      --accent:    #9a5f11;
-      --accent-dim:#c9a878;
-      --live:      #1d7a4c;
-      color-scheme: light;
-    }
-  }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 1.0625rem/1.6 var(--body);
+  font-optical-sizing: auto;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; }
 
-  * { box-sizing: border-box; }
+.page {
+  max-width: calc(var(--rail) + var(--measure) + 4rem);
+  margin: 0 auto;
+  padding-inline: 1.25rem;
+  padding-block: 4.5rem 3rem;
+}
 
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    font-size: 16px;
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-  }
+/* Rail + column grid, reused by every section */
+.row {
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 1fr);
+  column-gap: 3rem;
+}
+.rail-label {
+  font: 500 0.75rem/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 0.45rem;
+}
+.col { min-width: 0; max-width: var(--measure); }
 
-  .wrap {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 24px 96px;
-  }
+/* Intro */
+.intro { padding-bottom: 4rem; }
+.intro h1 {
+  font-weight: 700;
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.intro .lede {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(1.25rem, 2.6vw, 1.5rem);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin-top: 1.25rem;
+}
+.intro .about { margin-top: 1.25rem; color: var(--muted); max-width: 36rem; }
+.links {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+  margin-top: 1.75rem;
+  font: 500 0.875rem/1.4 var(--mono);
+}
+.links a { white-space: nowrap; }
 
-  a { color: var(--text); text-decoration: none; }
+section + section { border-top: 1px solid var(--line); }
+section { padding-block: 3.5rem; }
 
-  /* ---------- header ---------- */
+/* Projects */
+.project + .project { margin-top: 4.5rem; }
+.project-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+}
+.project h3 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+.project-links { display: flex; gap: 1.25rem; font: 500 0.875rem/1.4 var(--mono); }
+.meta { font: 400 0.8125rem/1.4 var(--mono); color: var(--muted); margin-top: 0.4rem; }
+.summary { margin-top: 1rem; font-size: 1.125rem; }
 
-  header { padding: 88px 0 56px; }
+.figures {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 1.75rem 0 0;
+  padding: 1.25rem 0;
+  border-block: 1px solid var(--line);
+}
+.figures div { min-width: 0; }
+.figures dt {
+  font: 500 1.5rem/1.1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.figures dd { margin: 0.4rem 0 0; font-size: 0.875rem; line-height: 1.4; color: var(--muted); }
+.note { margin-top: 0.9rem; font-size: 0.875rem; line-height: 1.5; color: var(--muted); }
 
-  h1 {
-    font-size: clamp(2rem, 6vw, 2.6rem);
-    line-height: 1.1;
-    letter-spacing: -0.025em;
-    margin: 0 0 14px;
-    font-weight: 600;
-  }
+.points { list-style: none; margin-top: 1.75rem; display: grid; gap: 0.9rem; }
+.points li { position: relative; padding-left: 1.25rem; }
+.points li::before {
+  content: ""; position: absolute; left: 0; top: 0.7em;
+  width: 0.45rem; height: 1px; background: var(--muted);
+}
+.points strong { font-weight: 600; }
+.stack { margin-top: 1.5rem; font: 400 0.8125rem/1.6 var(--mono); color: var(--muted); }
 
-  .tagline {
-    font-size: 1.075rem;
-    color: var(--text-mid);
-    margin: 0 0 28px;
-    max-width: 52ch;
-  }
+figure { margin: 2rem 0 0; }
+figcaption { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.5; color: var(--muted); }
+.shot { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #0d1117; }
 
-  .tagline strong { color: var(--text); font-weight: 600; }
+/* Chart: agent accuracy per fix, drawn on a 0 to 208 scale */
+.chart { margin: 2rem 0 0; }
+.chart h4 {
+  font: 600 1rem/1.3 var(--display); margin: 0 0 1rem;
+}
+.bars { list-style: none; display: grid; gap: 0.85rem; }
+.bar-label {
+  display: flex; justify-content: space-between; gap: 1rem;
+  font-size: 0.9375rem; line-height: 1.35;
+}
+.bar-label span:last-child { font: 500 0.875rem/1.35 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.track { margin-top: 0.35rem; height: 0.6rem; background: var(--surface); border-radius: 1px; }
+.fill { height: 100%; background: var(--bar); border-radius: 1px; }
+.bars li:last-child .fill { background: var(--accent); }
+.axis {
+  display: flex; justify-content: space-between; margin-top: 0.4rem;
+  font: 400 0.6875rem/1 var(--mono); color: var(--muted);
+}
 
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 10px;
-    font-family: var(--mono);
-    font-size: 0.8125rem;
-  }
+/* Night log for the rulebook */
+.log { list-style: none; margin-top: 2rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+.log li {
+  display: grid;
+  grid-template-columns: 3.25rem 6.75rem minmax(0, 1fr);
+  gap: 0.25rem 1rem;
+  align-items: baseline;
+  padding: 0.8rem 1rem;
+}
+.log li + li { border-top: 1px solid var(--line); }
+.log time { font: 400 0.8125rem/1.4 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.verdict {
+  justify-self: start;
+  font: 500 0.6875rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.3rem 0.45rem; border-radius: 3px;
+}
+.v-ok { color: var(--ok); background: var(--ok-bg); }
+.v-ask { color: var(--ask); background: var(--ask-bg); }
+.v-no { color: var(--no); background: var(--no-bg); }
+.log .what { font-size: 0.9375rem; line-height: 1.4; }
+.log .why { display: block; font-size: 0.8125rem; color: var(--muted); }
 
-  .links a {
-    color: var(--text-mid);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 5px 13px;
-    transition: color .15s, border-color .15s;
-  }
+/* Principles */
+.principles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 2.5rem; margin: 0; }
+.principles div { min-width: 0; }
+.principles dt { font: 600 1.0625rem/1.3 var(--display); }
+.principles dd { margin: 0.4rem 0 0; font-size: 0.9375rem; color: var(--muted); }
 
-  .links a:hover { color: var(--accent); border-color: var(--accent-dim); }
+/* Toolkit */
+.tools { display: grid; gap: 1rem; margin: 0; }
+.tools div { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 1rem; }
+.tools dt { font: 600 0.9375rem/1.5 var(--display); }
+.tools dd { margin: 0; font-size: 0.9375rem; }
 
-  /* ---------- sections ---------- */
+.prose p + p { margin-top: 0.9rem; }
 
-  section { padding: 40px 0; border-top: 1px solid var(--line-soft); }
+/* Build log: dated entries, newest first */
+.buildlog { list-style: none; display: grid; }
+.buildlog li {
+  display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1rem;
+  padding-block: 0.7rem; border-top: 1px solid var(--line);
+}
+.buildlog li:first-child { border-top: 0; padding-top: 0; }
+.buildlog time { font: 400 0.8125rem/1.7 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 
-  h2 {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin: 0 0 22px;
-  }
+.contact p + p { margin-top: 0.75rem; }
+.contact .links { margin-top: 0; }
+footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted); }
 
-  p { margin: 0 0 16px; color: var(--text-mid); }
-  p:last-child { margin-bottom: 0; }
-  p strong { color: var(--text); font-weight: 600; }
-
-  /* ---------- projects ---------- */
-
-  .projects { display: flex; flex-direction: column; gap: 2px; }
-
-  .project {
-    display: block;
-    background: var(--bg-raised);
-    border: 1px solid var(--line-soft);
-    border-radius: 10px;
-    padding: 20px 22px;
-    transition: border-color .15s, transform .15s;
-  }
-
-  a.project:hover { border-color: var(--accent-dim); transform: translateY(-1px); }
-
-  .project-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 7px;
-  }
-
-  .project h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
-    letter-spacing: -0.01em;
-  }
-
-  .badge {
-    flex: none;
-    font-family: var(--mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    padding: 2px 9px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    color: var(--text-dim);
-  }
-
-  .badge.live     { color: var(--live);   border-color: var(--live); }
-  .badge.building { color: var(--accent); border-color: var(--accent-dim); }
-
-  .project p { font-size: 0.9375rem; margin: 0 0 12px; }
-
-  .stack {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--text-dim);
-  }
-
-  /* the numbers line — the thing that separates you from
-     "I built a chatbot". Fill it in the moment you have real ones. */
-  .metrics {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--accent);
-    margin: 0 0 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 18px;
-  }
-
-  /* ---------- build log ---------- */
-
-  .log { list-style: none; margin: 0; padding: 0; }
-
-  .log li {
-    display: flex;
-    gap: 18px;
-    padding: 11px 0;
-    border-bottom: 1px solid var(--line-soft);
-    font-size: 0.9375rem;
-  }
-
-  .log li:last-child { border-bottom: 0; }
-
-  .log time {
-    flex: none;
-    width: 5.5em;
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    padding-top: 3px;
-  }
-
-  .log a { color: var(--text-mid); border-bottom: 1px solid var(--line); }
-  .log a:hover { color: var(--accent); border-color: var(--accent-dim); }
-
-  .empty {
-    font-size: 0.9375rem;
-    color: var(--text-dim);
-    font-style: italic;
-  }
-
-  /* ---------- footer ---------- */
-
-  footer {
-    padding-top: 40px;
-    border-top: 1px solid var(--line-soft);
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--text-dim);
-  }
-
-  @media (max-width: 560px) {
-    header { padding: 56px 0 40px; }
-    .project-head { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .log li { flex-direction: column; gap: 3px; }
-    .log time { width: auto; padding-top: 0; }
-  }
+@media (max-width: 760px) {
+  .page { padding-block: 2.5rem 2rem; }
+  .row { grid-template-columns: minmax(0, 1fr); row-gap: 1.25rem; }
+  .rail-label { padding-top: 0; }
+  section { padding-block: 2.5rem; }
+  .intro { padding-bottom: 2.5rem; }
+  .figures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .principles { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  .tools div { grid-template-columns: minmax(0, 1fr); gap: 0.2rem; }
+  .project + .project { margin-top: 3.5rem; }
+}
+@media (max-width: 480px) {
+  .buildlog li { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
+  .log li { grid-template-columns: auto minmax(0, 1fr); }
+  .log .what { grid-column: 1 / -1; }
+}
 </style>
 </head>
-
 <body>
-<div class="wrap">
+<main class="page">
 
-  <header>
-    <h1>Aditya Kannan</h1>
-    <p class="tagline">
-      AI engineer. I build <strong>retrieval and agent systems</strong> — and
-      I can tell you what each one costs per query.
-    </p>
-    <nav class="links">
-      <a href="https://github.com/adityakannan-2003">GitHub</a>
-      <a href="https://www.linkedin.com/in/adityakannan020/">LinkedIn</a>
-      <a href="mailto:kannanpadmavathi45@gmail.com">Email</a>
-      <!-- Add when you have them:
-      <a href="/resume.pdf">Résumé</a>
-      <a href="https://huggingface.co/YOUR-USERNAME">Hugging Face</a>
-      -->
-    </nav>
+  <header class="intro row">
+    <div aria-hidden="true"></div>
+    <div class="col">
+      <h1>Aditya Kannan</h1>
+      <p class="lede">AI engineer. I build retrieval and agent systems — and I can tell you what each one costs per query.</p>
+      <p class="about">Where a project answers questions, it's graded against figures computed from the data, so a score never rests on one model's opinion of another. I publish what I measured, including the runs that went against me and the bugs I found in my own answer keys.</p>
+      <nav class="links" aria-label="Profile links">
+        <a href="https://github.com/adityakannan-2003">GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/adityakannan020/">LinkedIn ↗</a>
+        <a href="mailto:kannanpadmavathi45@gmail.com">Email</a>
+      </nav>
+    </div>
   </header>
 
-  <section>
-    <h2>Now</h2>
-    <p>
-      Working through a self-directed 24-week AI engineering program —
-      transformers from scratch, then production RAG, agents, fine-tuning,
-      and the MLOps around all of it. Everything ships to a public URL.
-      Nothing stays in a notebook.
-    </p>
-    <p>
-      Background is CS plus an MS in Management of Technology, which mostly
-      means I'm interested in the part most demos skip: whether the thing is
-      worth running.
-    </p>
+  <section class="row" aria-labelledby="now-label">
+    <h2 id="now-label" class="rail-label">Now</h2>
+    <div class="col prose">
+      <p>Working through a self-directed 24-week AI engineering program — transformers from scratch, then production RAG, agents, fine-tuning, and the MLOps around all of it. Everything ships to a public URL. Nothing stays in a notebook.</p>
+      <p>Background is CS plus an MS in Management of Technology, which mostly means I'm interested in the part most demos skip: whether the thing is worth running.</p>
+      <p>Next: a public version of the data analyst agent, then a test bench for prompt injection against tool-using agents, then a small open model fine-tuned and measured against a frontier model.</p>
+    </div>
   </section>
 
-  <section>
-    <h2>Projects</h2>
-    <div class="projects">
+  <section id="work" class="row" aria-labelledby="work-label">
+    <h2 id="work-label" class="rail-label">Selected work</h2>
+    <div class="col">
 
-      <!-- ============================================================
-           TO ADD A PROJECT: copy one <a class="project"> block below,
-           change the href to the live URL, set the badge to
-           "badge live" / "badge building", and fill the metrics line.
-           Delete the placeholder blocks as real ones replace them.
-           ============================================================ -->
-
-      <div class="project">
+      <!-- edgar-intel -->
+      <article class="project" id="edgar-intel">
         <div class="project-head">
-          <h3>Production RAG application</h3>
-          <span class="badge">Nov 2026</span>
+          <h3>edgar-intel</h3>
+          <div class="project-links">
+            <a href="https://github.com/adityakannan-2003/edgar-intel">Code ↗</a>
+            <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/METRICS.md">Metrics ↗</a>
+          </div>
         </div>
-        <p>
-          Retrieval over a real document corpus with streaming responses,
-          citations back to source chunks, and an eval harness with a
-          hand-built golden dataset.
-        </p>
-        <div class="stack">Python · pgvector · hybrid search · LangSmith</div>
-      </div>
+        <p class="meta">Sep – Oct 2026 · retrieval, evaluation, agents</p>
+        <p class="summary">Search, question answering and a tool-calling agent over SEC 10-K filings. The evaluation set takes its answers from the XBRL figures companies file with the SEC, so a numeric answer is checked against what the company reported.</p>
 
-      <div class="project">
+        <dl class="figures">
+          <div><dt>232</dt><dd>evaluation questions, 208 numeric and 24 narrative</dd></div>
+          <div><dt>24</dt><dd>10-K filings from 8 companies, FY2023–FY2026</dd></div>
+          <div><dt>200/208</dt><dd>numeric questions the agent answers correctly</dd></div>
+          <div><dt>κ 0.42</dt><dd>LLM judge agreement with my labels, below the 0.60 floor</dd></div>
+        </dl>
+
+        <div class="chart" role="figure" aria-labelledby="chart-title">
+          <h4 id="chart-title">Agent accuracy, one fix at a time</h4>
+          <ol class="bars">
+            <li>
+              <div class="bar-label"><span>As first deployed</span><span>86 / 208</span></div>
+              <div class="track"><div class="fill" style="width:41.35%"></div></div>
+            </li>
+            <li>
+              <div class="bar-label"><span>Tool prints the citation id it registers</span><span>148 / 208</span></div>
+              <div class="track"><div class="fill" style="width:71.15%"></div></div>
+            </li>
+            <li>
+              <div class="bar-label"><span>Tools list the XBRL tags they hold</span><span>173 / 208</span></div>
+              <div class="track"><div class="fill" style="width:83.17%"></div></div>
+            </li>
+            <li>
+              <div class="bar-label"><span>Prompt states today’s date</span><span>200 / 208</span></div>
+              <div class="track"><div class="fill" style="width:96.15%"></div></div>
+            </li>
+          </ol>
+          <div class="axis" aria-hidden="true"><span>0</span><span>208 numeric questions</span></div>
+          <p class="note">Same question set and grader for every run, with each fix the only change from the run before it. Two identical runs differ by about 14 questions each way, so I wrote down predictions before each run. The agent reads figures from the same XBRL table the answer key comes from, so this measures lookups more than reading.</p>
+        </div>
+
+        <ul class="points">
+          <li>Found the agent escalating <strong>48% of questions</strong> because a tool printed a citation id in a different form from the one it registered. The model cited what it read, the check rejected it, and the agent gave up while holding the right figure.</li>
+          <li>Built hybrid retrieval in Postgres: pgvector embeddings and full-text search, fused with reciprocal rank fusion. <strong>hit@5 0.762, MRR 0.555</strong> on the 232-question set.</li>
+          <li>Found and fixed eight defects in the evaluation harness itself, including fiscal years taken from the filing instead of the period a figure covers, a 52/53-week year-end filed under the wrong year, and a grader that failed correct comparative answers.</li>
+          <li>Checked the LLM judge against 24 answers I labelled by hand. It agreed at κ 0.42, with 7 false positives and no false negatives, so the gate withheld a narrative pass rate of 79% that my labels put at 50%.</li>
+          <li>Compared four chunking strategies end to end. At the same 512-token ceiling, fixed, recursive and section-aware chunking tied within one question. Chunk size moved accuracy more than the strategy did.</li>
+        </ul>
+        <p class="stack">Python · Postgres + pgvector · sentence-transformers · FastAPI · MCP · OpenTelemetry · Docker · GitHub Actions</p>
+      </article>
+
+      <!-- data-analyst-agent -->
+      <article class="project" id="data-analyst-agent">
         <div class="project-head">
-          <h3>Multi-step tool-using agent</h3>
-          <span class="badge">Dec 2026</span>
+          <h3>Data Analyst Agent</h3>
+          <div class="project-links">
+            <a href="https://github.com/adityakannan-2003/data-analyst-agent">Code ↗</a>
+            <a href="https://github.com/adityakannan-2003/data-analyst-agent#evaluation">Evals ↗</a>
+          </div>
         </div>
-        <p>
-          Calls real external APIs, handles its own failures with retries and
-          fallbacks, and can't loop forever burning tokens. Fully traced.
-        </p>
-        <div class="stack">LangGraph · tool schemas · observability</div>
-      </div>
+        <p class="meta">Oct 2026 · agents, evaluation</p>
+        <p class="summary">Ask questions about any CSV in plain English. The agent writes pandas code, runs it, fixes its own errors and draws charts, so every number in an answer comes from code it ran.</p>
 
-      <div class="project">
+        <figure>
+          <div class="shot"><img src="images/demo.gif" width="832" height="470" alt="Terminal recording: the agent is asked which product sold the most units, writes pandas code, removes cancelled orders and names the real best seller."></div>
+          <figcaption>A real run on 541,909 transactions from a UK online shop. The two biggest sellers by raw units were single orders cancelled within minutes, one of them for 80,995 paper crafts. The agent nets out cancellations and says how it counted. Thinking pauses are shortened.</figcaption>
+        </figure>
+
+        <dl class="figures">
+          <div><dt>15/15</dt><dd>questions on real retail data, passed on every run</dd></div>
+          <div><dt>22/22</dt><dd>questions on a synthetic set with planted traps</dd></div>
+          <div><dt>$0.017</dt><dd>and 9 seconds per answer on Sonnet 5.5</dd></div>
+          <div><dt>~70</dt><dd>lines in the hand-written agent loop</dd></div>
+        </dl>
+
+        <ul class="points">
+          <li>Wrote the agent loop directly on the Claude API with no framework. It handles refusals, tool input cut off at the output limit, malformed input and a step cap, and rolls the conversation back after an error.</li>
+          <li>Runs code in a child process that keeps its variables between calls like notebook cells, restarts it after a 60-second hang, and trims tracebacks to the agent’s own lines so the model can see what to fix.</li>
+          <li>Built two evals with 37 questions whose answer keys are computed from the data, and tested the grader on empty, off-topic and subtly wrong answers.</li>
+          <li>Made Sonnet 5.5 the default after it matched Opus 5.5 on five held-out questions at about half the cost.</li>
+          <li>Built a version that runs the agent’s code in Anthropic’s sandbox, so it can be offered on a public page. It passed the same 37 questions on every run, at $0.025 to $0.039 per answer.</li>
+          <li>Of the 4 failures I investigated, <strong>3 were bugs in my own answer key</strong>. Reading failures before trusting the score is what found them.</li>
+        </ul>
+        <p class="stack">Python · Claude API · pandas · matplotlib · Streamlit · pytest · GitHub Actions</p>
+      </article>
+
+      <!-- agent-rulebook -->
+      <article class="project" id="agent-rulebook">
         <div class="project-head">
-          <h3>Fine-tuned open model</h3>
-          <span class="badge">Dec 2026</span>
+          <h3>Agent Rulebook</h3>
+          <div class="project-links">
+            <a href="https://claude.ai/artifact/SRzK53ZqHLMquWJJyfVzFc">Live demo ↗</a>
+            <a href="https://github.com/adityakannan-2003/agent-rulebook">Code ↗</a>
+          </div>
         </div>
-        <p>
-          A small open model tuned on a narrow task, benchmarked head-to-head
-          against prompting and RAG on accuracy, latency, and cost.
-        </p>
-        <div class="stack">LoRA · PEFT · TRL · Hugging Face Hub</div>
-      </div>
+        <p class="meta">Oct 2026 · agent safety</p>
+        <p class="summary">The model proposes and the rulebook decides. Every action an agent wants to take goes through 36 lines of plain code that let it run, hold it for a person, or refuse it. Anything the rules don’t mention is refused.</p>
 
-      <div class="project">
-        <div class="project-head">
-          <h3>Capstone</h3>
-          <span class="badge">Jan 2027</span>
-        </div>
-        <p>
-          One system combining retrieval, agentic tool use, and production
-          infrastructure — shipped with an ROI memo defending the unit
-          economics of running it.
-        </p>
-        <div class="stack">TBD</div>
-      </div>
+        <ol class="log" aria-label="Excerpt from one scripted night for a made-up mug shop">
+          <li><time>23:19</time><span class="verdict v-ok">Allowed</span><span class="what">Refund $24.99 for a damaged mug<span class="why">$24.99 of $500 spent today</span></span></li>
+          <li><time>23:47</time><span class="verdict v-ask">Waiting</span><span class="what">Refund $189.00 for a lost package<span class="why">refunds over $100 need a person</span></span></li>
+          <li><time>01:15</time><span class="verdict v-ask">Waiting</span><span class="what">Email every customer about shipping delays<span class="why">2,340 recipients, limit 10</span></span></li>
+          <li><time>03:40</time><span class="verdict v-no">Blocked</span><span class="what">Refund $79.00 for a wrong size<span class="why">over the $500 daily budget</span></span></li>
+          <li><time>05:30</time><span class="verdict v-no">Blocked</span><span class="what">Put every product on 20% off<span class="why">no rule for update_prices, so denied by default</span></span></li>
+        </ol>
+        <p class="note">From one scripted night for a made-up mug shop. In the live demo a real Claude agent makes the choices, and they change from run to run. The rules don’t.</p>
 
-      <!-- EXAMPLE of a finished card — delete this comment block and
-           uncomment when your first project is actually live.
+        <dl class="figures">
+          <div><dt>36</dt><dd>lines of rules in plain Python</dd></div>
+          <div><dt>3</dt><dd>verdicts: allow, ask a person, refuse</dd></div>
+          <div><dt>7</dt><dd>unit tests, run on both the Python and JavaScript rules</dd></div>
+          <div><dt>3</dt><dd>models tried: Claude, Qwen 3 4B, Llama 3.2 3B</dd></div>
+        </dl>
 
-      <a class="project" href="https://your-project.vercel.app">
-        <div class="project-head">
-          <h3>Project name</h3>
-          <span class="badge live">Live</span>
-        </div>
-        <div class="metrics">
-          <span>87% faithfulness</span>
-          <span>$0.003 / query</span>
-          <span>p95 1.2s</span>
-        </div>
-        <p>One sentence on what it does and who it's for.</p>
-        <div class="stack">Stack · goes · here</div>
-      </a>
-      -->
+        <ul class="points">
+          <li>Built a live demo where a Claude agent works through a night’s inbox. Allowed actions run in a simulated shop, held ones wait for you to approve, and refused ones go back to the agent as errors it has to work around.</li>
+          <li>Budgets have memory. A $79 refund was fine on its own and was blocked because of a $420 supply order earlier that night.</li>
+          <li>Ran the same night on two small free models through Ollama as well as Claude. The rules held for all three. They also showed their limit: one model refunded $10 on a $24.99 order, which was within the rules, so it went through.</li>
+        </ul>
+        <p class="stack">Python · JavaScript · Claude API · Ollama</p>
+      </article>
 
     </div>
   </section>
 
-  <section>
-    <h2>Build log</h2>
-    <ul class="log">
-      <!-- One line per week. Link to the post, the repo, or the commit.
-           <li><time>2026-09-13</time><span>Built an autograd engine from scratch —
-           <a href="#">what backprop actually is</a></span></li> -->
-      <li class="empty">Starting 7 September 2026. One entry a week.</li>
-    </ul>
+  <section class="row" aria-labelledby="how-label">
+    <h2 id="how-label" class="rail-label">How I work</h2>
+    <div class="col">
+      <dl class="principles">
+        <div><dt>Grade against answers no model wrote</dt><dd>XBRL figures for the filings, keys computed from the data for the analyst agent.</dd></div>
+        <div><dt>Read the failures before the score</dt><dd>That is how I found eight harness defects in one project and three answer-key bugs in another.</dd></div>
+        <div><dt>Test the grader too</dt><dd>A judge that passes everything reports a high score. Mine came back at κ 0.42, so its number stays out of the results.</dd></div>
+        <div><dt>Measure the noise first</dt><dd>When identical runs move 14 questions each way, a two-question gain means nothing. I set the bar before each run.</dd></div>
+        <div><dt>Hold questions back</dt><dd>A fix written after seeing a failure only proves it fixes that failure. Held-out questions test whether it generalizes.</dd></div>
+        <div><dt>Keep limits outside the model</dt><dd>Spending caps and approval steps belong in code you can read and test, because a model’s judgment can’t be unit-tested.</dd></div>
+      </dl>
+    </div>
   </section>
 
-  <footer>
-    Aditya Kannan · <a href="https://github.com/adityakannan-2003">github.com/adityakannan-2003</a>
-  </footer>
+  <section class="row" aria-labelledby="log-label">
+    <h2 id="log-label" class="rail-label">Build log</h2>
+    <div class="col">
+      <ol class="buildlog">
+        <li><time datetime="2026-10-12">2026-10-12</time><span>Moved the data analyst agent’s code into Anthropic’s sandbox for a public page, and <a href="https://github.com/adityakannan-2003/data-analyst-agent#online-version">ran both evals again</a>: every question passed.</span></li>
+        <li><time datetime="2026-10-10">2026-10-10</time><span>Data analyst agent: <a href="https://github.com/adityakannan-2003/data-analyst-agent#real-data-eval">15 of 15 questions on 541,909 real transactions</a>, traps included.</span></li>
+        <li><time datetime="2026-10-07">2026-10-07</time><span>Agent Rulebook: <a href="https://github.com/adityakannan-2003/agent-rulebook">36 lines of rules between an agent and its actions</a>, with a live demo.</span></li>
+        <li><time datetime="2026-10-06">2026-10-06</time><span>edgar-intel: <a href="https://github.com/adityakannan-2003/edgar-intel/commit/c4a7424">fixed the citation bug</a> that made the agent escalate 48% of questions.</span></li>
+        <li><time datetime="2026-09-11">2026-09-11</time><span>Started edgar-intel: retrieval and evaluation over SEC 10-K filings.</span></li>
+      </ol>
+    </div>
+  </section>
 
-</div>
+  <section class="row" aria-labelledby="tools-label">
+    <h2 id="tools-label" class="rail-label">Toolkit</h2>
+    <div class="col">
+      <dl class="tools">
+        <div><dt>Models &amp; agents</dt><dd>Claude API, tool use, prompt caching, MCP, OpenAI API, Ollama</dd></div>
+        <div><dt>Retrieval</dt><dd>pgvector, Postgres full-text search, reciprocal rank fusion, cross-encoder reranking, sentence-transformers</dd></div>
+        <div><dt>Evaluation</dt><dd>golden sets from structured data, LLM-as-judge, Cohen’s κ, held-out sets, regression gates in CI</dd></div>
+        <div><dt>Engineering</dt><dd>Python, FastAPI, pandas, Docker, GitHub Actions, OpenTelemetry, pytest, uv</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="row contact" aria-labelledby="contact-label">
+    <h2 id="contact-label" class="rail-label">Contact</h2>
+    <div class="col">
+      <p>The fastest way to see how I work is the code. Every figure on this page comes from a results file or metrics document in these repositories.</p>
+      <p class="links">
+        <a href="https://github.com/adityakannan-2003">github.com/adityakannan-2003 ↗</a>
+        <a href="https://www.linkedin.com/in/adityakannan020/">linkedin.com/in/adityakannan020 ↗</a>
+        <a href="mailto:kannanpadmavathi45@gmail.com">kannanpadmavathi45@gmail.com</a>
+      </p>
+      <footer>Updated October 2026</footer>
+    </div>
+  </section>
+
+</main>
 </body>
 </html>
