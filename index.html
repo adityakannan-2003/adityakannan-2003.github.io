@@ -183,7 +183,9 @@ figcaption { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.5; color: 
   padding: 0.8rem 1rem;
 }
 .log li + li { border-top: 1px solid var(--line); }
-.log time { font: 400 0.8125rem/1.4 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.log time, .log .num { font: 400 0.8125rem/1.4 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+/* The pipeline reuses the log's rows: stage number, status, stage and its evidence */
+.pipeline { margin-top: 1.25rem; }
 .verdict {
   justify-self: start;
   font: 500 0.6875rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase;
@@ -262,7 +264,25 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
     <div class="col prose">
       <p>Working through a self-directed 24-week AI engineering program — transformers from scratch, then production RAG, agents, fine-tuning, and the MLOps around all of it. Everything ships to a public URL. Nothing stays in a notebook.</p>
       <p>Background is CS plus an MS in Management of Technology, which mostly means I'm interested in the part most demos skip: whether the thing is worth running.</p>
-      <p>Next: a test bench for prompt injection against tool-using agents, then a small open model fine-tuned and measured against a frontier model.</p>
+      <p>This month I’m backing each stage of the pipeline below with measured work on a live system. Next: routing each question to the cheapest model that answers it correctly, and retrieval against a whole filing held in a long context.</p>
+    </div>
+  </section>
+
+  <section id="pipeline" class="row" aria-labelledby="pipeline-label">
+    <h2 id="pipeline-label" class="rail-label">Pipeline</h2>
+    <div class="col">
+      <p>Nine stages of putting a model in front of users, and the project that covers each. A stage counts as done when it is measured on a running system, not when the code exists.</p>
+      <ol class="log pipeline" aria-label="Nine stages of an AI system, with status">
+        <li><span class="num">01</span><span class="verdict v-ask">In progress</span><span class="what"><a href="#edgar-intel">Data and ground truth</a><span class="why">Answers come from the XBRL figures companies file with the SEC. Next: a weekly refresh that keeps bad data from deploying.</span></span></li>
+        <li><span class="num">02</span><span class="verdict v-ask">In progress</span><span class="what"><a href="#edgar-intel">Retrieval</a><span class="why">Hybrid search over 10-K text, hit@5 0.762. Next: the same questions answered from a whole filing in a long context.</span></span></li>
+        <li><span class="num">03</span><span class="verdict v-ask">In progress</span><span class="what"><a href="#edgar-intel">Prompting and model choice</a><span class="why">Agent accuracy from 86 to 200 of 208, one fix at a time. Next: a router that sends each question to the cheapest model that gets it right.</span></span></li>
+        <li><span class="num">04</span><span class="verdict v-ask">In progress</span><span class="what"><a href="#fine-tune">Fine-tuning</a><span class="why">Qwen3-8B with LoRA reached 0.91 F1, against 0.98 for a prompted frontier model. Next: serve it and find the volume where it pays.</span></span></li>
+        <li><span class="num">05</span><span class="verdict v-ok">Done</span><span class="what"><a href="https://github.com/adityakannan-2003/edgar-intel#use-it-from-claude-mcp">Agents and tools</a><span class="why">edgar-intel’s tools are public over MCP. One command adds them to Claude Code, and each figure cites its filing.</span></span></li>
+        <li><span class="num">06</span><span class="verdict v-ask">In progress</span><span class="what"><a href="#edgar-intel">Evaluation</a><span class="why">Every project is graded against answers no model wrote, with a regression gate in CI. Next: grading answers from the live demos.</span></span></li>
+        <li><span class="num">07</span><span class="verdict v-ask">In progress</span><span class="what"><a href="#injection-bench">Safety and guardrails</a><span class="why">A rulebook between an agent and its actions, and a prompt-injection bench over 1,872 runs. Next: a privacy filter for uploaded data.</span></span></li>
+        <li><span class="num">08</span><span class="verdict v-ask">In progress</span><span class="what"><a href="#edgar-intel">Serving and deployment</a><span class="why">edgar-intel is live and deploys only when its tests and eval gate pass. Next: serving the fine-tuned model.</span></span></li>
+        <li><span class="num">09</span><span class="verdict v-ask">In progress</span><span class="what"><a href="#edgar-intel">Monitoring and cost</a><span class="why">Traces from the live API, and a measured cost per answer on every project. Next: dashboards for latency, cost and eval score over time.</span></span></li>
+      </ol>
     </div>
   </section>
 
@@ -275,11 +295,12 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
         <div class="project-head">
           <h3>edgar-intel</h3>
           <div class="project-links">
+            <a href="https://edgar-intel.fly.dev/docs">Live ↗</a>
             <a href="https://github.com/adityakannan-2003/edgar-intel">Code ↗</a>
             <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/METRICS.md">Metrics ↗</a>
           </div>
         </div>
-        <p class="meta">Sep – Oct 2026 · retrieval, evaluation, agents</p>
+        <p class="meta">Sep – Oct 2026 · retrieval, evaluation, agents, deployment</p>
         <p class="summary">Search, question answering and a tool-calling agent over SEC 10-K filings. The evaluation set takes its answers from the XBRL figures companies file with the SEC, so a numeric answer is checked against what the company reported.</p>
 
         <dl class="figures">
@@ -319,8 +340,64 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
           <li>Found and fixed eight defects in the evaluation harness itself, including fiscal years taken from the filing instead of the period a figure covers, a 52/53-week year-end filed under the wrong year, and a grader that failed correct comparative answers.</li>
           <li>Checked the LLM judge against 24 answers I labelled by hand. It agreed at κ 0.42, with 7 false positives and no false negatives, so the gate withheld a narrative pass rate of 79% that my labels put at 50%.</li>
           <li>Compared four chunking strategies end to end. At the same 512-token ceiling, fixed, recursive and section-aware chunking tied within one question. Chunk size moved accuracy more than the strategy did.</li>
+          <li>Put it <a href="https://edgar-intel.fly.dev/docs">online</a>. Every push to main runs the tests and an eval gate, and deploys only if both pass. A change that cut the passages sent to the model from 8 to 1 passed every unit test, and <a href="https://github.com/adityakannan-2003/edgar-intel/actions/runs/39838701704">the gate kept it from deploying</a>.</li>
+          <li>Published the agent’s tools <a href="https://github.com/adityakannan-2003/edgar-intel#use-it-from-claude-mcp">over MCP</a>. One command adds them to Claude Code, with no key and no database to set up, and every figure they return cites the filing it came from.</li>
         </ul>
-        <p class="stack">Python · Postgres + pgvector · sentence-transformers · FastAPI · MCP · OpenTelemetry · Docker · GitHub Actions</p>
+        <p class="stack">Python · Postgres + pgvector · sentence-transformers · FastAPI · MCP · OpenTelemetry · Docker · GitHub Actions · Fly.io</p>
+      </article>
+
+      <!-- fine-tune vs prompting -->
+      <article class="project" id="fine-tune">
+        <div class="project-head">
+          <h3>Fine-tune vs prompting</h3>
+          <div class="project-links">
+            <a href="https://github.com/adityakannan-2003/edgar-intel#fine-tune-vs-prompting-measured">Results ↗</a>
+            <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/FINETUNE_RUN.md#why-the-fine-tune-loses">Error analysis ↗</a>
+            <a href="https://github.com/adityakannan-2003/edgar-intel/tree/main/src/edgar_intel/finetune">Code ↗</a>
+          </div>
+        </div>
+        <p class="meta">Oct 2026 · fine-tuning, evaluation · part of edgar-intel</p>
+        <p class="summary">Can a small open model fine-tuned on one task match a frontier model given four worked examples? The task: list the financial facts a 10-K passage states. Every label comes from the SEC’s XBRL data, and the 532 test passages are from 10 companies the fine-tune never saw.</p>
+
+        <dl class="figures">
+          <div><dt>0.91</dt><dd>micro F1 for Qwen3-8B after LoRA, up from 0.44</dd></div>
+          <div><dt>0.98</dt><dd>for gpt-6.1-sol with four worked examples</dd></div>
+          <div><dt>$0.06</dt><dd>per 1,000 requests for the fine-tune under load</dd></div>
+          <div><dt>$5.87</dt><dd>total spend, GPU and API</dd></div>
+        </dl>
+
+        <div class="chart" role="figure" aria-labelledby="ft-chart-title">
+          <h4 id="ft-chart-title">Micro F1 on 532 held-out passages</h4>
+          <ol class="bars">
+            <li>
+              <div class="bar-label"><span>Qwen3-8B, four examples, not fine-tuned</span><span>0.44</span></div>
+              <div class="track"><div class="fill" style="width:43.9%"></div></div>
+            </li>
+            <li>
+              <div class="bar-label"><span>Qwen3-8B fine-tuned with LoRA</span><span>0.91</span></div>
+              <div class="track"><div class="fill" style="width:90.8%"></div></div>
+            </li>
+            <li>
+              <div class="bar-label"><span>gpt-6-luna, four examples</span><span>0.97</span></div>
+              <div class="track"><div class="fill" style="width:97.3%"></div></div>
+            </li>
+            <li>
+              <div class="bar-label"><span>gpt-6.1-sol, four examples</span><span>0.98</span></div>
+              <div class="track"><div class="fill" style="width:98%"></div></div>
+            </li>
+          </ol>
+          <div class="axis" aria-hidden="true"><span>0</span><span>1.0</span></div>
+          <p class="note">First pass of each API model and the first of two training seeds; the repeats land within 0.007. Sol’s lead over the fine-tune has a 95% interval of 0.056 to 0.089.</p>
+        </div>
+
+        <ul class="points">
+          <li>Fine-tuning took the same 8B model from <strong>0.44 to 0.91</strong> on 0.77 GPU-hours per seed on one RTX 4090. Untuned, it found the right figures and wrote “in millions” with a zero or two too many.</li>
+          <li>The frontier prompt still won by 0.07, ten times the largest run-to-run spread I measured.</li>
+          <li>Read all 322 of the fine-tune’s errors beside the frontier model’s answer to the same passage. The largest group, 120, broke a definition the prompt states, such as counting the noncontrolling interests it says to leave out. 32 were defects in my own labels, and they cost both models about equally.</li>
+          <li>The fine-tune’s case is cost: <strong>$0.06 per 1,000 requests</strong> with the GPU kept busy, about 3.5× cheaper than gpt-6-luna. One request at a time on a rented GPU, it costs more than luna.</li>
+          <li>The first labeller was mostly noise: 18,480 of its 19,199 labels were diluted EPS. I rewrote it and audited samples by hand until 50 of 50 were right.</li>
+        </ul>
+        <p class="stack">Python · PyTorch · Hugging Face TRL + PEFT · vLLM · RunPod · OpenAI API</p>
       </article>
 
       <!-- data-analyst-agent -->
@@ -395,6 +472,35 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
         <p class="stack">Python · JavaScript · Claude API · Ollama</p>
       </article>
 
+      <!-- injection-bench -->
+      <article class="project" id="injection-bench">
+        <div class="project-head">
+          <h3>Injection Bench</h3>
+          <div class="project-links">
+            <a href="https://github.com/adityakannan-2003/injection-bench">Code ↗</a>
+            <a href="https://github.com/adityakannan-2003/injection-bench/blob/main/out/main/predictions.md">Predictions ↗</a>
+          </div>
+        </div>
+        <p class="meta">Oct 2026 · agent safety, evaluation</p>
+        <p class="summary">Do tool-using agents follow instructions hidden in the content they read, and do defenses stop those instructions from becoming actions? Agents work through an inbox, a spreadsheet and the web while 8 attack techniques pursue 9 attacker goals, under 5 defense settings.</p>
+
+        <dl class="figures">
+          <div><dt>1,872</dt><dd>runs on three Claude models, with no errors</dd></div>
+          <div><dt>7</dt><dd>harmful outcomes, all text slipped into an allowed report</dd></div>
+          <div><dt>3/144</dt><dd>for Haiku 5.5 with no defense; Sonnet and Opus 0</dd></div>
+          <div><dt>$28.81</dt><dd>for the whole study</dd></div>
+        </dl>
+
+        <ul class="points">
+          <li>Scored being fooled separately from doing harm. A model can emit the attacker’s tool call while a rulebook blocks it, and an allowed call can still carry the attacker’s words.</li>
+          <li>All <strong>7 harms</strong> were attacker text inside an otherwise allowed report to the manager. The rulebook permits that report, so it never sees what is written in it.</li>
+          <li>Wrote seven predictions before the main run and scored them after. The technique ranking I predicted did not hold: three harmful events cannot rank eight techniques.</li>
+          <li>Opus refused 23 times and left 22 attacked tasks unfinished, 19 of them on one data-leak goal. Low attack success can still cost availability.</li>
+          <li>Corrected my own grader mid-study: holding a $140 refund for approval while replying to the customer is the right outcome. Re-grading changed one task verdict and no harm verdict.</li>
+        </ul>
+        <p class="stack">Python · Claude API · Ollama · pytest</p>
+      </article>
+
     </div>
   </section>
 
@@ -416,6 +522,9 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
     <h2 id="log-label" class="rail-label">Build log</h2>
     <div class="col">
       <ol class="buildlog">
+        <li><time datetime="2026-10-22">2026-10-22</time><span>edgar-intel is <a href="https://edgar-intel.fly.dev/docs">live</a>, deploys only when its eval gate passes, and serves its tools <a href="https://github.com/adityakannan-2003/edgar-intel#use-it-from-claude-mcp">over MCP</a>.</span></li>
+        <li><time datetime="2026-10-17">2026-10-17</time><span>Fine-tune vs prompting: <a href="#fine-tune">Qwen3-8B with LoRA at 0.91 F1</a>, against 0.98 for a prompted frontier model.</span></li>
+        <li><time datetime="2026-10-13">2026-10-13</time><span>Injection Bench: <a href="#injection-bench">1,872 runs on three Claude models</a>. Every harm was text inside an allowed report.</span></li>
         <li><time datetime="2026-10-12">2026-10-12</time><span>Put the data analyst agent <a href="https://adityakannan-data-analyst.streamlit.app">online</a>, with its code running in Anthropic’s sandbox. <a href="https://github.com/adityakannan-2003/data-analyst-agent#online-version">Both evals passed again</a>.</span></li>
         <li><time datetime="2026-10-10">2026-10-10</time><span>Data analyst agent: <a href="https://github.com/adityakannan-2003/data-analyst-agent#real-data-eval">15 of 15 questions on 541,909 real transactions</a>, traps included.</span></li>
         <li><time datetime="2026-10-07">2026-10-07</time><span>Agent Rulebook: <a href="https://github.com/adityakannan-2003/agent-rulebook">36 lines of rules between an agent and its actions</a>, with a live demo.</span></li>
@@ -429,10 +538,10 @@ footer { margin-top: 1rem; font: 400 0.75rem/1.5 var(--mono); color: var(--muted
     <h2 id="tools-label" class="rail-label">Toolkit</h2>
     <div class="col">
       <dl class="tools">
-        <div><dt>Models &amp; agents</dt><dd>Claude API, tool use, prompt caching, MCP, OpenAI API, Ollama</dd></div>
+        <div><dt>Models &amp; agents</dt><dd>Claude API, tool use, prompt caching, MCP, OpenAI API, Ollama, LoRA fine-tuning (TRL, PEFT), vLLM</dd></div>
         <div><dt>Retrieval</dt><dd>pgvector, Postgres full-text search, reciprocal rank fusion, cross-encoder reranking, sentence-transformers</dd></div>
         <div><dt>Evaluation</dt><dd>golden sets from structured data, LLM-as-judge, Cohen’s κ, held-out sets, regression gates in CI</dd></div>
-        <div><dt>Engineering</dt><dd>Python, FastAPI, pandas, Docker, GitHub Actions, OpenTelemetry, pytest, uv</dd></div>
+        <div><dt>Engineering</dt><dd>Python, FastAPI, pandas, Docker, GitHub Actions, Fly.io, OpenTelemetry, pytest, uv</dd></div>
       </dl>
     </div>
   </section>
