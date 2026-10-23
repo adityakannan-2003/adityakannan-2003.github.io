@@ -20,6 +20,8 @@
 <script>
 // Dark unless this visitor picked light before. Runs first so the page never flashes the wrong theme.
 try { if (localStorage.getItem('theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}
+// Scroll reveals hide sections until they appear; only when this script runs, so the page never depends on it.
+document.documentElement.classList.add('js');
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,6 +46,12 @@ try { if (localStorage.getItem('theme') === 'light') document.documentElement.da
   --track: #1a202b;
   --grid: rgba(255, 255, 255, 0.035);
   --nav-bg: rgba(10, 12, 16, 0.78);
+  --name-to: #8b95a8;
+  --glow-a: rgba(94, 234, 212, 0.16);
+  --glow-b: rgba(129, 140, 248, 0.13);
+  --spot: rgba(94, 234, 212, 0.09);
+  --term-bg: #07090c;
+  --code-key: #8b95a8; --code-str: #c7f9ee; --code-num: #fbbf24;
 
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
@@ -71,6 +79,12 @@ try { if (localStorage.getItem('theme') === 'light') document.documentElement.da
   --track: #edf0f4;
   --grid: rgba(13, 17, 23, 0.05);
   --nav-bg: rgba(246, 247, 249, 0.8);
+  --name-to: #3e4756;
+  --glow-a: rgba(15, 118, 110, 0.1);
+  --glow-b: rgba(79, 70, 229, 0.08);
+  --spot: rgba(15, 118, 110, 0.06);
+  --term-bg: #0d1117;
+  --code-key: #8b95a8; --code-str: #c7f9ee; --code-num: #fbbf24;
   color-scheme: light;
 }
 
@@ -139,15 +153,41 @@ strong { font-weight: 600; color: var(--fg); }
 .theme .moon, :root[data-theme="light"] .theme .sun { display: none; }
 :root[data-theme="light"] .theme .moon { display: block; }
 
-/* Hero */
-.hero { padding-block: 5.5rem 4.5rem; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+/* Hero: a soft two-colour glow behind the name, kept inside the hero so nothing scrolls sideways */
+.hero { padding-block: 5.5rem 4.5rem; position: relative; isolation: isolate; }
+.hero::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(34rem 22rem at 18% 30%, var(--glow-a), transparent 70%),
+    radial-gradient(30rem 20rem at 82% 40%, var(--glow-b), transparent 70%);
+}
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr); gap: 3rem; align-items: end; }
+
+/* A terminal window with a real request to the live API */
+.term { margin: 0; background: var(--term-bg); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6); }
+.term-bar { display: flex; align-items: center; gap: 0.45rem; padding: 0.75rem 1rem; border-bottom: 1px solid #1a1f29; font: 500 0.75rem/1 var(--mono); color: #8b95a8; }
+.term-bar i { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: #ff5f57; }
+.term-bar i:nth-child(2) { background: #febc2e; }
+.term-bar i:nth-child(3) { background: #28c840; }
+.term-bar span { margin-left: auto; }
+.term-body { margin: 0; padding: 1.1rem 1.15rem 1.25rem; font: 400 0.8125rem/1.65 var(--mono); color: #e7eaf0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.term-body .p { color: #5eead4; }
+.term-body .k { color: var(--code-key); }
+.term-body .s { color: var(--code-str); }
+.term-body .n { color: var(--code-num); }
+.term figcaption { margin: 0; padding: 0.8rem 1.15rem; border-top: 1px solid #1a1f29; font-size: 0.8125rem; color: #9aa3b5; }
 .prompt { font: 500 0.9375rem/1.4 var(--mono); color: var(--accent); }
 .caret { display: inline-block; width: 0.55em; height: 1.1em; margin-left: 0.25em; vertical-align: -0.2em; background: var(--accent); animation: blink 1.1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 .hero h1 {
-  font: 800 clamp(3.25rem, 9.5vw, 6.75rem)/0.95 var(--mono);
+  font: 800 clamp(3.25rem, 9.5vw, 6.25rem)/0.95 var(--mono);
   letter-spacing: -0.05em; margin-top: 1.25rem;
+  background: linear-gradient(180deg, var(--fg) 35%, var(--name-to));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
+@media (forced-colors: active) { .hero h1 { color: CanvasText; background: none; } }
 .hero h1 span { display: block; }
 .lede { font-size: clamp(1.25rem, 2.5vw, 1.625rem); line-height: 1.4; margin-top: 1.75rem; max-width: 50rem; }
 .lede em { font-style: normal; color: var(--accent); }
@@ -161,8 +201,29 @@ strong { font-weight: 600; color: var(--fg); }
   transition: background-color 160ms var(--ease), border-color 160ms var(--ease);
 }
 .btn:hover { border-color: var(--line-strong); background: var(--surface-2); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: 0 10px 30px -12px var(--accent); }
 .btn.primary:hover { filter: brightness(1.08); background: var(--accent); }
+.btn { transition: background-color 160ms var(--ease), border-color 160ms var(--ease), transform 160ms var(--ease); }
+.btn:hover { transform: translateY(-1px); }
+
+/* Spotlight: a soft glow that follows the pointer across cards and tiles (set by script, mouse only) */
+.project, .stage, .stats > div, .principles > div, .contact, .term { position: relative; isolation: isolate; }
+.project::before, .stage::before, .stats > div::before, .principles > div::before, .contact::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(26rem circle at var(--mx, 50%) var(--my, -30%), var(--spot), transparent 45%);
+  opacity: 0; transition: opacity 220ms var(--ease);
+}
+.project:hover::before, .stage:hover::before, .stats > div:hover::before, .principles > div:hover::before, .contact:hover::before { opacity: 1; }
+
+/* Sections fade up once as they scroll in. Only when the script runs (html.js), and never under reduced motion. */
+.js :is(.sec-head, .intro, .pipeline-progress, .stage, .project, .principles > div, .buildlog li, .tools > div, .contact, .stats > div) {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+}
+.js :is(.stage, .principles > div, .stats > div):nth-child(3n+2) { transition-delay: 70ms; }
+.js :is(.stage, .principles > div, .stats > div):nth-child(3n) { transition-delay: 140ms; }
+.js .in { opacity: 1 !important; transform: none !important; }
+@media print { .js * { opacity: 1 !important; transform: none !important; } }
 
 /* Tiles of numbers: the hero's and each project's */
 .stats, .figures {
@@ -202,7 +263,14 @@ strong { font-weight: 600; color: var(--fg); }
 .v-ask { color: var(--ask); background: var(--ask-bg); }
 .v-no { color: var(--no); background: var(--no-bg); }
 
-/* Pipeline: nine tiles */
+/* Pipeline: a nine-segment summary, then nine tiles */
+.pipeline-progress { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
+.segs { display: grid; grid-template-columns: repeat(9, 1fr); gap: 0.3rem; flex: 1; max-width: 32rem; }
+.segs span { height: 0.5rem; border-radius: 3px; background: var(--ask-bg); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ask) 35%, transparent); }
+.segs span.done { background: var(--ok); box-shadow: none; }
+.pipeline-progress p { font: 500 0.8125rem/1.3 var(--mono); color: var(--muted); white-space: nowrap; }
+.pipeline-progress b { color: var(--ok); font-weight: 600; }
+
 .stages { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.875rem; margin-top: 1.75rem; }
 .stage {
   background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem 1.25rem 1.35rem;
@@ -264,7 +332,8 @@ strong { font-weight: 600; color: var(--fg); }
 
 figure { margin: 2rem 0 0; }
 figcaption { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.55; color: var(--muted); }
-.shot { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #0d1117; }
+/* Hug the 832px recording: wider cards would otherwise leave an empty strip beside it */
+.shot { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #0d1117; max-width: 832px; }
 
 /* The rulebook's night log */
 .log { list-style: none; margin-top: 2rem; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); font-size: 0.9375rem; }
@@ -302,7 +371,13 @@ figcaption { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.55; color:
 .contact h3 { font: 800 clamp(2rem, 5vw, 3.25rem)/1 var(--mono); letter-spacing: -0.045em; }
 .contact p { color: var(--muted); margin-top: 1rem; max-width: 40rem; }
 .foot { padding-block: 2rem 3rem; font: 400 0.8125rem/1.5 var(--mono); color: var(--muted); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.foot a { color: var(--muted); text-decoration: none; }
+.foot a:hover { color: var(--accent); }
 
+@media (max-width: 1000px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+  .term { max-width: 40rem; }
+}
 @media (max-width: 960px) {
   .stages, .principles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stats, .figures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -332,6 +407,7 @@ figcaption { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.55; color:
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  .js * { opacity: 1 !important; transform: none !important; }
 }
 </style>
 </head>
@@ -360,16 +436,37 @@ figcaption { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.55; color:
 <main id="main">
 
   <section class="hero wrap" id="top">
-    <p class="prompt">$ whoami — AI engineer<span class="caret" aria-hidden="true"></span></p>
-    <h1><span>Aditya</span> <span>Kannan</span></h1>
-    <p class="lede">I build retrieval and agent systems — and I can tell you <em>what each one costs per query.</em></p>
-    <p class="about">Where a project answers questions, it's graded against figures computed from the data, so a score never rests on one model's opinion of another. I publish what I measured, including the runs that went against me and the bugs I found in my own answer keys.</p>
-    <nav class="cta" aria-label="Profile links">
-      <a class="btn primary" href="#work">See the work <span aria-hidden="true">→</span></a>
-      <a class="btn" href="https://github.com/adityakannan-2003">GitHub <span aria-hidden="true">↗</span></a>
-      <a class="btn" href="https://www.linkedin.com/in/adityakannan020/">LinkedIn <span aria-hidden="true">↗</span></a>
-      <a class="btn" href="mailto:kannanpadmavathi45@gmail.com">Email</a>
-    </nav>
+    <div class="hero-grid">
+      <div>
+        <p class="prompt">$ whoami — AI engineer<span class="caret" aria-hidden="true"></span></p>
+        <h1><span>Aditya</span> <span>Kannan</span></h1>
+        <p class="lede">I build retrieval and agent systems — and I can tell you <em>what each one costs per query.</em></p>
+        <p class="about">Where a project answers questions, it's graded against figures computed from the data, so a score never rests on one model's opinion of another. I publish what I measured, including the runs that went against me and the bugs I found in my own answer keys.</p>
+        <nav class="cta" aria-label="Profile links">
+          <a class="btn primary" href="#work">See the work <span aria-hidden="true">→</span></a>
+          <a class="btn" href="https://github.com/adityakannan-2003">GitHub <span aria-hidden="true">↗</span></a>
+          <a class="btn" href="https://www.linkedin.com/in/adityakannan020/">LinkedIn <span aria-hidden="true">↗</span></a>
+          <a class="btn" href="mailto:kannanpadmavathi45@gmail.com">Email</a>
+        </nav>
+      </div>
+      <!-- A real request to the live API on 22 Oct 2026; the key is masked -->
+      <figure class="term" aria-labelledby="term-cap">
+        <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>zsh — edgar-intel</span></div>
+<pre class="term-body"><code><span class="p">$</span> curl -s https://edgar-intel.fly.dev/ask \
+    -H <span class="s">"x-api-key: ••••••"</span> \
+    -d <span class="s">'{"question": "What were Apple total net sales in fiscal 2025?"}'</span>
+
+{
+  <span class="k">"outcome"</span>: <span class="s">"answered"</span>,
+  <span class="k">"answer"</span>: <span class="s">"Apple Inc. total net sales in fiscal 2025 were $416.16 billion."</span>,
+  <span class="k">"citations"</span>: [<span class="s">"xbrl:0000320193-25-000079"</span>],
+  <span class="k">"steps"</span>: <span class="n">3</span>,
+  <span class="k">"latency_ms"</span>: <span class="n">7417</span>,
+  <span class="k">"cost_usd"</span>: <span class="n">0.000433</span>
+}</code></pre>
+        <figcaption id="term-cap">A real answer from the live API, cited to Apple’s XBRL filing.</figcaption>
+      </figure>
+    </div>
     <dl class="stats">
       <div><dt>200<small>/208</small></dt><dd>numeric questions the edgar-intel agent answers correctly</dd></div>
       <div><dt>0.91 <small>vs 0.98</small></dt><dd>F1 for a fine-tuned Qwen3-8B, against a prompted frontier model</dd></div>
@@ -390,6 +487,10 @@ figcaption { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.55; color:
   <section class="sec wrap" id="pipeline" aria-labelledby="pipeline-label">
     <div class="sec-head"><h2 id="pipeline-label"><b aria-hidden="true">02 /</b> Pipeline</h2></div>
     <p class="intro">Nine stages of putting a model in front of users, and the project that covers each. A stage counts as done when it is measured on a running system, not when the code exists.</p>
+    <div class="pipeline-progress">
+      <div class="segs" aria-hidden="true"><span></span><span></span><span></span><span></span><span class="done"></span><span></span><span></span><span></span><span></span></div>
+      <p><b>1</b> of 9 done · 8 in progress</p>
+    </div>
     <ol class="stages" aria-label="Nine stages of an AI system, with status">
       <li class="stage"><div class="stage-top"><span class="num">01</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Data and ground truth</a><p>Answers come from the XBRL figures companies file with the SEC. Next: a weekly refresh that keeps bad data from deploying.</p></li>
       <li class="stage"><div class="stage-top"><span class="num">02</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Retrieval</a><p>Hybrid search over 10-K text, hit@5 0.762. Next: the same questions answered from a whole filing in a long context.</p></li>
@@ -649,7 +750,7 @@ figcaption { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.55; color:
 
 </main>
 
-<footer class="wrap foot"><span>Updated October 2026</span><span>~/aditya-kannan</span></footer>
+<footer class="wrap foot"><span>Updated October 2026</span><a href="#top">Back to top <span aria-hidden="true">↑</span></a></footer>
 
 <script>
 // Theme toggle: the button is pressed while the light theme is on, and the choice is remembered on this device.
@@ -668,6 +769,32 @@ toggle.addEventListener('click', () => {
   syncTheme();
 });
 syncTheme();
+
+// Fade sections up as they scroll in, once each. Reduced motion, or no IntersectionObserver: show everything now.
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const revealed = document.querySelectorAll('.sec-head, .intro, .pipeline-progress, .stage, .project, .principles > div, .buildlog li, .tools > div, .contact, .stats > div');
+if (calm || !('IntersectionObserver' in window)) {
+  revealed.forEach((el) => el.classList.add('in'));
+} else {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -6% 0px' });
+  revealed.forEach((el) => io.observe(el));
+  // Safety net: a page that never renders a frame (a background tab, some previews) never fires the
+  // observer. If nothing has appeared after 2.5 s, show everything rather than leave the page blank.
+  setTimeout(() => { if (!document.querySelector('.in')) revealed.forEach((el) => el.classList.add('in')); }, 2500);
+}
+
+// Spotlight on cards: follow the mouse. Skipped on touch screens and under reduced motion.
+if (!calm && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.querySelectorAll('.project, .stage, .stats > div, .principles > div, .contact').forEach((el) => {
+    el.addEventListener('pointermove', (e) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      el.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  });
+}
 </script>
 </body>
 </html>
