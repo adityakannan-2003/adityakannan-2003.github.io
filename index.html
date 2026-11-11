@@ -635,7 +635,7 @@ html, body { overflow-x: clip; }
     <div class="prose">
       <p>Working through a self-directed 24-week AI engineering program — transformers from scratch, then production RAG, agents, fine-tuning, and the MLOps around all of it. Everything ships to a public URL. Nothing stays in a notebook.</p>
       <p>Background is CS plus an MS in Management of Technology, which mostly means I'm interested in the part most demos skip: whether the thing is worth running.</p>
-      <p>This month I’m backing each stage of the pipeline below with measured work on a live system. Next: routing each question to the cheapest model that answers it correctly, and retrieval against a whole filing held in a long context.</p>
+      <p>This month I’m backing each stage of the pipeline below with measured work on a live system. Next: a weekly refresh of the SEC data, a monitoring dashboard for edgar-intel, and a memo on whether all of it is worth running.</p>
     </div>
   </section>
 
@@ -643,19 +643,19 @@ html, body { overflow-x: clip; }
     <div class="sec-head"><h2 id="pipeline-label"><b aria-hidden="true">02 /</b> Pipeline</h2></div>
     <p class="intro">Nine stages of putting a model in front of users, and the project that covers each. A stage counts as done when it is measured on a running system, not when the code exists.</p>
     <div class="pipeline-progress">
-      <div class="segs" aria-hidden="true"><span></span><span></span><span></span><span></span><span class="done"></span><span></span><span></span><span></span><span></span></div>
-      <p><b>1</b> of 9 done · 8 in progress</p>
+      <div class="segs" aria-hidden="true"><span></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span></span><span class="done"></span><span class="done"></span><span></span></div>
+      <p><b>6</b> of 9 done · 3 in progress</p>
     </div>
     <ol class="stages" aria-label="Nine stages of an AI system, with status">
       <li class="stage"><div class="stage-top"><span class="num">01</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Data and ground truth</a><p>Answers come from the XBRL figures companies file with the SEC. Next: a weekly refresh that keeps bad data from deploying.</p></li>
-      <li class="stage"><div class="stage-top"><span class="num">02</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Retrieval</a><p>Hybrid search over 10-K text, hit@5 0.762. Next: the same questions answered from a whole filing in a long context.</p></li>
-      <li class="stage"><div class="stage-top"><span class="num">03</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Prompting and model choice</a><p>Agent accuracy from 86 to 200 of 208, one fix at a time. Next: a router that sends each question to the cheapest model that gets it right.</p></li>
-      <li class="stage"><div class="stage-top"><span class="num">04</span><span class="verdict v-ask">In progress</span></div><a href="#fine-tune">Fine-tuning</a><p>Qwen3-8B with LoRA reached 0.91 F1, against 0.98 for a prompted frontier model. Next: serve it and find the volume where it pays.</p></li>
+      <li class="stage done"><div class="stage-top"><span class="num">02</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/LONG_CONTEXT.md">Retrieval</a><p>With the whole 10-K in context, 207 and 208 of 208 numeric answers were right (re-graded), against 183 and 184 from retrieved passages, at $1.95 against $0.53 per 1,000 questions with prompt caching.</p></li>
+      <li class="stage done"><div class="stage-top"><span class="num">03</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/ROUTER.md">Prompting and model choice</a><p>gpt-6-luna for every question got 204 of 208 at $0.24 per 1,000 correct answers, against 198 at $0.32 for the deployed gpt-4o-mini. Routing added cost without adding accuracy.</p></li>
+      <li class="stage done"><div class="stage-top"><span class="num">04</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/SERVING.md">Fine-tuning</a><p>Qwen3-8B with LoRA, trained, evaluated and served on an RTX 4090: 4.2 requests a second for 16 users at $0.059 per 1,000, with F1 held at 0.910.</p></li>
       <li class="stage done"><div class="stage-top"><span class="num">05</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel#use-it-from-claude-mcp">Agents and tools</a><p>edgar-intel’s tools are public over MCP. One command adds them to Claude Code, and each figure cites its filing.</p></li>
-      <li class="stage"><div class="stage-top"><span class="num">06</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Evaluation</a><p>Every project is graded against answers no model wrote, with a regression gate in CI. Next: grading answers from the live demos.</p></li>
-      <li class="stage"><div class="stage-top"><span class="num">07</span><span class="verdict v-ask">In progress</span></div><a href="#injection-bench">Safety and guardrails</a><p>A rulebook between an agent and its actions, and a prompt-injection bench over 1,872 runs. Next: a privacy filter for uploaded data.</p></li>
-      <li class="stage"><div class="stage-top"><span class="num">08</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Serving and deployment</a><p>edgar-intel is live and deploys only when its tests and eval gate pass. Next: serving the fine-tuned model.</p></li>
-      <li class="stage"><div class="stage-top"><span class="num">09</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Monitoring and cost</a><p>Traces from the live API, and a measured cost per answer on every project. Next: dashboards for latency, cost and eval score over time.</p></li>
+      <li class="stage"><div class="stage-top"><span class="num">06</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Evaluation</a><p>Every project is graded against answers no model wrote, with a regression gate in CI. Grading of live answers is built and waits for real traffic.</p></li>
+      <li class="stage done"><div class="stage-top"><span class="num">07</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/data-analyst-agent/blob/main/docs/week3-monitoring-grading-privacy.md">Safety and guardrails</a><p>The data analyst’s privacy filter is live: 100% precision, 98% recall on 135 held-out columns, and flagged uploads stay out of its log. Plus a rulebook and a prompt-injection bench over 1,872 runs.</p></li>
+      <li class="stage done"><div class="stage-top"><span class="num">08</span><span class="verdict v-ok">Done</span></div><a href="#edgar-intel">Serving and deployment</a><p>edgar-intel is live and deploys only when its tests and eval gate pass, and the fine-tuned model has been served and load-tested on a rented GPU.</p></li>
+      <li class="stage"><div class="stage-top"><span class="num">09</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Monitoring and cost</a><p>Traces from the live API, a measured cost per answer on every project, and a usage dashboard for the data analyst. Next: a dashboard for edgar-intel.</p></li>
     </ol>
   </section>
 
@@ -869,6 +869,9 @@ html, body { overflow-x: clip; }
   <section class="sec wrap" id="log" aria-labelledby="log-label">
     <div class="sec-head"><h2 id="log-label"><b aria-hidden="true">05 /</b> Build log</h2></div>
     <ol class="buildlog">
+      <li><time datetime="2026-11-03">2026-11-03</time><span>Served the fine-tuned Qwen3-8B on an RTX 4090: <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/SERVING.md">4.2 requests a second at $0.059 per 1,000</a>. The data analyst got <a href="https://github.com/adityakannan-2003/data-analyst-agent/blob/main/docs/week3-monitoring-grading-privacy.md">a privacy filter and a usage dashboard</a>.</span></li>
+      <li><time datetime="2026-10-31">2026-10-31</time><span>Model router: <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/ROUTER.md">one model for every question beat routing</a>, 204 of 208 at $0.24 per 1,000 correct answers.</span></li>
+      <li><time datetime="2026-10-31">2026-10-31</time><span>RAG vs long context: <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/LONG_CONTEXT.md">the whole 10-K in context got 207 and 208 of 208</a>, against 183 and 184 from retrieved passages.</span></li>
       <li><time datetime="2026-10-22">2026-10-22</time><span>edgar-intel is <a href="https://edgar-intel.fly.dev/docs">live</a>, deploys only when its eval gate passes, and serves its tools <a href="https://github.com/adityakannan-2003/edgar-intel#use-it-from-claude-mcp">over MCP</a>.</span></li>
       <li><time datetime="2026-10-17">2026-10-17</time><span>Fine-tune vs prompting: <a href="#fine-tune">Qwen3-8B with LoRA at 0.91 F1</a>, against 0.98 for a prompted frontier model.</span></li>
       <li><time datetime="2026-10-13">2026-10-13</time><span>Injection Bench: <a href="#injection-bench">1,872 runs on three Claude models</a>. Every harm was text inside an allowed report.</span></li>
@@ -905,7 +908,7 @@ html, body { overflow-x: clip; }
 
 </main>
 
-<footer class="wrap foot"><span>Updated October 2026<span class="hw"> · Happy Halloween</span></span><a href="#top">Back to top <span aria-hidden="true">↑</span></a></footer>
+<footer class="wrap foot"><span>Updated November 2026<span class="hw"> · Happy Halloween</span></span><a href="#top">Back to top <span aria-hidden="true">↑</span></a></footer>
 
 <script>
 // Theme toggle: the button is pressed while the light theme is on, and the choice is remembered on this device.
