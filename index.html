@@ -635,7 +635,7 @@ html, body { overflow-x: clip; }
     <div class="prose">
       <p>Working through a self-directed 24-week AI engineering program — transformers from scratch, then production RAG, agents, fine-tuning, and the MLOps around all of it. Everything ships to a public URL. Nothing stays in a notebook.</p>
       <p>Background is CS plus an MS in Management of Technology, which mostly means I'm interested in the part most demos skip: whether the thing is worth running.</p>
-      <p>This month I’m backing each stage of the pipeline below with measured work on a live system. Next: a weekly refresh of the SEC data, a monitoring dashboard for edgar-intel, and a memo on whether all of it is worth running.</p>
+      <p>Since October I’ve been backing each stage of the pipeline below with measured work on a live system. Eight of nine are done. The last, grading live answers, is built and waits for real traffic.</p>
     </div>
   </section>
 
@@ -643,11 +643,11 @@ html, body { overflow-x: clip; }
     <div class="sec-head"><h2 id="pipeline-label"><b aria-hidden="true">02 /</b> Pipeline</h2></div>
     <p class="intro">Nine stages of putting a model in front of users, and the project that covers each. A stage counts as done when it is measured on a running system, not when the code exists.</p>
     <div class="pipeline-progress">
-      <div class="segs" aria-hidden="true"><span></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span></span><span class="done"></span><span class="done"></span><span></span></div>
-      <p><b>6</b> of 9 done · 3 in progress</p>
+      <div class="segs" aria-hidden="true"><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span></span><span class="done"></span><span class="done"></span><span class="done"></span></div>
+      <p><b>8</b> of 9 done · 1 in progress</p>
     </div>
     <ol class="stages" aria-label="Nine stages of an AI system, with status">
-      <li class="stage"><div class="stage-top"><span class="num">01</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Data and ground truth</a><p>Answers come from the XBRL figures companies file with the SEC. Next: a weekly refresh that keeps bad data from deploying.</p></li>
+      <li class="stage done"><div class="stage-top"><span class="num">01</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/REFRESH.md">Data and ground truth</a><p>A weekly job pulls new 10-Ks from the SEC, checks their figures against the filing text, and publishes only if the eval gate passes. On 16 Nov it added Apple’s and Costco’s FY2026 filings on its own. A corrupted copy of the same two was blocked.</p></li>
       <li class="stage done"><div class="stage-top"><span class="num">02</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/LONG_CONTEXT.md">Retrieval</a><p>With the whole 10-K in context, 207 and 208 of 208 numeric answers were right (re-graded), against 183 and 184 from retrieved passages, at $1.95 against $0.53 per 1,000 questions with prompt caching.</p></li>
       <li class="stage done"><div class="stage-top"><span class="num">03</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/ROUTER.md">Prompting and model choice</a><p>gpt-6-luna for every question got 204 of 208 at $0.24 per 1,000 correct answers, against 198 at $0.32 for the deployed gpt-4o-mini. Routing added cost without adding accuracy.</p></li>
       <li class="stage done"><div class="stage-top"><span class="num">04</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/SERVING.md">Fine-tuning</a><p>Qwen3-8B with LoRA, trained, evaluated and served on an RTX 4090: 4.2 requests a second for 16 users at $0.059 per 1,000, with F1 held at 0.910.</p></li>
@@ -655,7 +655,7 @@ html, body { overflow-x: clip; }
       <li class="stage"><div class="stage-top"><span class="num">06</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Evaluation</a><p>Every project is graded against answers no model wrote, with a regression gate in CI. Grading of live answers is built and waits for real traffic.</p></li>
       <li class="stage done"><div class="stage-top"><span class="num">07</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/data-analyst-agent/blob/main/docs/week3-monitoring-grading-privacy.md">Safety and guardrails</a><p>The data analyst’s privacy filter is live: 100% precision, 98% recall on 135 held-out columns, and flagged uploads stay out of its log. Plus a rulebook and a prompt-injection bench over 1,872 runs.</p></li>
       <li class="stage done"><div class="stage-top"><span class="num">08</span><span class="verdict v-ok">Done</span></div><a href="#edgar-intel">Serving and deployment</a><p>edgar-intel is live and deploys only when its tests and eval gate pass, and the fine-tuned model has been served and load-tested on a rented GPU.</p></li>
-      <li class="stage"><div class="stage-top"><span class="num">09</span><span class="verdict v-ask">In progress</span></div><a href="#edgar-intel">Monitoring and cost</a><p>Traces from the live API, a measured cost per answer on every project, and a usage dashboard for the data analyst. Next: a dashboard for edgar-intel.</p></li>
+      <li class="stage done"><div class="stage-top"><span class="num">09</span><span class="verdict v-ok">Done</span></div><a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/MONITORING.md">Monitoring and cost</a><p>Traces from the live API, a measured cost per answer on every project, and dashboards for both live apps. edgar-intel costs $6.70 a month to run and pays for that at about 2 questions a month, if a manual lookup takes 5 minutes.</p></li>
     </ol>
   </section>
 
@@ -668,6 +668,7 @@ html, body { overflow-x: clip; }
         <div class="title"><h3>edgar-intel</h3><span class="tag live"><span class="dot" aria-hidden="true"></span>live</span></div>
         <div class="project-links">
           <a href="https://edgar-intel.fly.dev/docs">Live <span aria-hidden="true">↗</span></a>
+          <a href="https://edgar-intel.fly.dev/dashboard">Dashboard <span aria-hidden="true">↗</span></a>
           <a href="https://github.com/adityakannan-2003/edgar-intel">Code <span aria-hidden="true">↗</span></a>
           <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/METRICS.md">Metrics <span aria-hidden="true">↗</span></a>
         </div>
@@ -869,6 +870,7 @@ html, body { overflow-x: clip; }
   <section class="sec wrap" id="log" aria-labelledby="log-label">
     <div class="sec-head"><h2 id="log-label"><b aria-hidden="true">05 /</b> Build log</h2></div>
     <ol class="buildlog">
+      <li><time datetime="2026-11-16">2026-11-16</time><span>edgar-intel’s weekly refresh <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/REFRESH.md">added two new 10-Ks on its own</a> after its checks and eval gate passed. It also has <a href="https://edgar-intel.fly.dev/dashboard">a live dashboard</a> and <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/ROI.md">a memo on what it costs to run</a>.</span></li>
       <li><time datetime="2026-11-03">2026-11-03</time><span>Served the fine-tuned Qwen3-8B on an RTX 4090: <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/SERVING.md">4.2 requests a second at $0.059 per 1,000</a>. The data analyst got <a href="https://github.com/adityakannan-2003/data-analyst-agent/blob/main/docs/week3-monitoring-grading-privacy.md">a privacy filter and a usage dashboard</a>.</span></li>
       <li><time datetime="2026-10-31">2026-10-31</time><span>Model router: <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/ROUTER.md">one model for every question beat routing</a>, 204 of 208 at $0.24 per 1,000 correct answers.</span></li>
       <li><time datetime="2026-10-31">2026-10-31</time><span>RAG vs long context: <a href="https://github.com/adityakannan-2003/edgar-intel/blob/main/docs/LONG_CONTEXT.md">the whole 10-K in context got 207 and 208 of 208</a>, against 183 and 184 from retrieved passages.</span></li>
